@@ -1,11 +1,21 @@
 from huffman_coding import tree
+import pickle
 
 
-string = 'mississippi river'
+string = 'mississippi river mississippi river mississippi river mississippi river'
 
 huffman_tree = tree.Tree(string)
 huffman_tree.create_tree()
 
-huffman_tree.encode_elements()
+compressed_file = huffman_tree.get_compressed_file()
+binary_presentation = compressed_file[1]
 
-print(huffman_tree.encoded_elements)
+
+with open('testing.bin', 'wb') as fp:
+    # pickle.dump(int(binary_presentation), fp)
+    for i in range(len(binary_presentation)):
+        fp.write(bytearray(int(binary_presentation[i])))
+
+with open('test.txt', 'wb') as fp:
+    pickle.dump(int(binary_presentation), fp)
+

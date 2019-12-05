@@ -10,6 +10,7 @@ class Tree:
     base_nodes = []
     root = None
     encoded_elements = {}
+    compressed_text = ''
 
     def __init__(self, text):
         """
@@ -80,17 +81,31 @@ class Tree:
 
     def encode_elements(self):
         """Maps the binary encoding of the corresponding element into a dic"""
-        binary_encoding = []
+        # binary_encoding = []
+        binary_encoding = ''
 
         for i in range(len(self.base_nodes)):
             current_node = self.base_nodes[i]
-            while current_node.parent != None:
+            while current_node.parent is not None:
                 if current_node.is_left_child:
-                    binary_encoding.insert(0, '0')
+                    # binary_encoding.insert(0, '0')
+                    binary_encoding = '0' + binary_encoding
                 if current_node.is_right_child:
-                    binary_encoding.insert(0, '1')
+                    # binary_encoding.insert(0, '1')
+                    binary_encoding = '1' + binary_encoding
                 current_node = current_node.parent
 
-            self.encoded_elements[self.base_nodes[i].value] = binary_encoding.\
-                copy()
-            binary_encoding = []
+            self.encoded_elements[self.base_nodes[i].value] = binary_encoding
+            binary_encoding = ''
+
+    def compress(self):
+        """Compresses the string in text"""
+        self.encode_elements()
+        for char in self.text:
+            self.compressed_text += ''.join(self.encoded_elements[char])
+
+    def get_compressed_file(self):
+        """Returns the compressed file which contains compressed_text and
+         encoded_elements"""
+        self.compress()
+        return [self.encoded_elements, self.compressed_text]
