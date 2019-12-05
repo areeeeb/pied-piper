@@ -6,3 +6,4 @@ huffman_tree = tree.Tree(dic)
 huffman_tree.create_tree()
 
 root = huffman_tree.root
+print(root)

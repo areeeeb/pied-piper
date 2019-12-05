@@ -6,6 +6,7 @@ from .node import Node
 class Tree:
     nodesList = []
     root = None
+    encoded_elements = {}
 
     def __init__(self, elements_dict):
         """
@@ -13,6 +14,7 @@ class Tree:
         :type elements_dict: dict
         """
         self.elements_dict = elements_dict
+        self.elements_length = len(elements_dict)
 
     def sort_elements_dict(self):
         """This method sorts the elements_dict in ascending order based on the
@@ -26,7 +28,9 @@ class Tree:
         """Creates base (leaf) nodes of the tree"""
         self.sort_elements_dict()
         for value in self.elements_dict:
-            node = Node(value=value, frequency=self.elements_dict[value])
+            node = Node(value=value,
+                        frequency=self.elements_dict[value],
+                        is_leaf=True)
             self.nodesList.append(node)
 
     def insert_single_node(self, node):
@@ -57,3 +61,18 @@ class Tree:
             self.insert_single_node(current_node)
 
         self.root = self.nodesList[0]
+
+    def map_encoding(self):
+        """Maps the binary encoding of the corresponding element into a dic"""
+        binary_encoding = ''
+        current_node = self.root
+        while len(self.encoded_elements) < self.elements_length:
+            if current_node.is_leaf:
+                self.encoded_elements[current_node.value] = binary_encoding
+
+            while not current_node.is_leaf:
+                if current_node.left is not None:
+                    binary_encoding += '0'
+                    current_node = current_node.left
+                    continue
+
