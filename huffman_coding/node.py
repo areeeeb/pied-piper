@@ -4,7 +4,10 @@ class Node:
                  value=None,
                  left=None,
                  right=None,
-                 is_leaf=False):
+                 is_leaf=False,
+                 parent=None,
+                 is_left_child=False,
+                 is_right_child=False):
         """
 
         :type left: Node
@@ -18,6 +21,9 @@ class Node:
         self.value = value
         self.frequency = frequency
         self.is_leaf = is_leaf
+        self.is_left_child = is_left_child
+        self.is_right_child = is_right_child
+        self.parent = parent
 
     def __repr__(self):
         return f'Node(frequency: {self.frequency}, value: {self.value})'
