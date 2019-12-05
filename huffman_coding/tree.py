@@ -4,18 +4,29 @@ from .node import Node
 
 
 class Tree:
+    elements_dict = {}
+    elements_length = 0
     nodes_list = []
     base_nodes = []
     root = None
     encoded_elements = {}
 
-    def __init__(self, elements_dict):
+    def __init__(self, text):
         """
         elements_dict is the dictionary of values and their frequencies.
-        :type elements_dict: dict
+        :type text: str
         """
-        self.elements_dict = elements_dict
-        self.elements_length = len(elements_dict)
+        self.text = text
+        self.create_elements_dict()
+
+    def create_elements_dict(self):
+        """Creates elements_dict based on the text"""
+        for char in self.text:
+            if char in self.elements_dict:
+                self.elements_dict[char] += 1
+                continue
+            self.elements_dict[char] = 1
+        self.elements_length = len(self.elements_dict)
 
     def sort_elements_dict(self):
         """This method sorts the elements_dict in ascending order based on the
