@@ -102,7 +102,8 @@ class Tree:
         """Compresses the string in text"""
         self.encode_elements()
         for char in self.text:
-            self.compressed_text += ''.join(self.encoded_elements[char])
+            # self.compressed_text += ''.join(self.encoded_elements[char])
+            self.compressed_text = self.compressed_text + self.encoded_elements[char]
 
     def get_compressed_file(self):
         """Returns the compressed file which contains compressed_text and
