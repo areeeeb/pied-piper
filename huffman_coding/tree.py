@@ -8,9 +8,9 @@ class Tree:
     elements_length = 0
     nodes_list = []
     base_nodes = []
-    root = None
     encoded_elements = {}
     compressed_text = ''
+    root_node = None
 
     def __init__(self, text):
         """
@@ -64,7 +64,7 @@ class Tree:
         """Creates huffman tree based on 'elements_dict'"""
         while len(self.nodes_list) > 1:
             left_node = self.nodes_list[i]
-            right_node = self.nodes_list[i + 1]
+            right_node = self.nodes_list[i+1]
             left_node.is_left_child = True
             right_node.is_right_child = True
             combined_frequency = left_node.frequency + right_node.frequency
@@ -74,17 +74,18 @@ class Tree:
             current_node.left.parent = current_node
             current_node.right.parent = current_node
             # Deleting the first two nodes that are in the current_node
-            if len(self.nodes_list) > 1:
-                del self.nodes_list[0:2]
+            del self.nodes_list[0:2]
             self.insert_single_node(current_node)
-        self.root = self.nodes_list[0]
+
+        self.root_node = self.nodes_list[0]
 
     def encode_elements(self):
         """Maps the binary encoding of the corresponding element into a dic"""
         # binary_encoding = []
-        binary_encoding = ''
+        # binary_encoding = ''
 
         for i in range(len(self.base_nodes)):
+            binary_encoding = ''
             current_node = self.base_nodes[i]
             while current_node.parent is not None:
                 if current_node.is_left_child:
@@ -96,17 +97,23 @@ class Tree:
                 current_node = current_node.parent
 
             self.encoded_elements[self.base_nodes[i].value] = binary_encoding
-            binary_encoding = ''
 
-    def compress(self):
+    def compress(self, key):
         """Compresses the string in text"""
         self.encode_elements()
         for char in self.text:
             # self.compressed_text += ''.join(self.encoded_elements[char])
-            self.compressed_text = self.compressed_text + self.encoded_elements[char]
+            self.compressed_text += self.encoded_elements[char]
+        binary_key = bin(key)[2:]
+        starting_bits = '0' * (8 - len(binary_key))
+        binary_key = starting_bits + binary_key
+        self.compressed_text = binary_key + self.compressed_text
 
-    def get_compressed_file(self):
+    def get_compressed_file(self, key):
         """Returns the compressed file which contains compressed_text and
          encoded_elements"""
-        self.compress()
+        self.compress(key)
         return [self.encoded_elements, self.compressed_text]
+
+    def __repr__(self):
+        return f'root_node(frequency: {self.root_node.frequency})'
