@@ -1,25 +1,29 @@
-from huffman_coding import tree
+import pickle
+import bitarray
+from huffman_coding.HuffmanTree import HuffmanTree
 
 
-string = 'mississippi river'
+string = 'Mississippi river'
 
-huffman_tree = tree.Tree(string)
-huffman_tree.create_tree()
+compression_huffman_tree = HuffmanTree(string)
+compression_huffman_tree.create_tree()
 
-compressed_file = huffman_tree.get_compressed_file()
+compressed_file = compression_huffman_tree.get_compressed_file(key=2)
 binary_presentation = compressed_file[1]
-
+meta_data = compressed_file[0]
 print(binary_presentation)
 
-byte_array = bytearray()
-for i in range(0, len(binary_presentation), 8):
-    byte_array.append(int(binary_presentation[i:i+8], 2))
+bit_array = bitarray.bitarray(binary_presentation)
+# for bit in binary_presentation:
+#     bit_array.append(bit)
 
-print(byte_array)
-
+print(bit_array)
+print(compression_huffman_tree.garbage_bits)
 # for i in range(0, len(binary_presentation)):
 #     byte_array.append(int(binary_presentation[i]))
 
+with open('metadata.dat', 'wb') as fp:
+    pickle.dump(meta_data, fp)
 
-with open('testing.bin', 'wb') as fp:
-    fp.write(byte_array)
+with open('testing2.bin', 'wb') as fp:
+    fp.write(bit_array)

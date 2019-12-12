@@ -3,22 +3,31 @@ import collections
 from .node import Node
 
 
-class Tree:
+class HuffmanTree:
     elements_dict = {}
     elements_length = 0
     nodes_list = []
     base_nodes = []
     encoded_elements = {}
-    compressed_text = ''
+    encoded_text = ''
+    decoded_text = ''
     root_node = None
+    garbage_bits = 0
 
-    def __init__(self, text):
+    def __init__(self, text='', elements_dict=None):
         """
+        DO NOT ENTER BOTH ARGUMENTS, ONLY ONE OF THEM IS NEEDED FOR IT TO WORK
         elements_dict is the dictionary of values and their frequencies.
         :type text: str
+        :type elements_dict: dict
         """
         self.text = text
-        self.create_elements_dict()
+        if text:
+            # if user entered text then create elements_dict
+            self.create_elements_dict()
+        else:
+            self.elements_dict = elements_dict
+            self.garbage_bits = elements_dict.pop('g_bits')
 
     def create_elements_dict(self):
         """Creates elements_dict based on the text"""
@@ -103,17 +112,42 @@ class Tree:
         self.encode_elements()
         for char in self.text:
             # self.compressed_text += ''.join(self.encoded_elements[char])
-            self.compressed_text += self.encoded_elements[char]
+            self.encoded_text += self.encoded_elements[char]
         binary_key = bin(key)[2:]
         starting_bits = '0' * (8 - len(binary_key))
         binary_key = starting_bits + binary_key
-        self.compressed_text = binary_key + self.compressed_text
+        self.encoded_text = binary_key + self.encoded_text
+
+        self.garbage_bits = 8 - (len(self.encoded_text) % 8)
+        # TODO: delete line below it
+        self.elements_dict['g_bits'] = self.garbage_bits
+
+    def decompress(self, encoded_file_text):
+        """Decompresses the file based on elements_dict"""
+        self.create_tree()
+        # current_node = self.root_node
+
+        for i in range(self.garbage_bits):
+            encoded_file_text = encoded_file_text[:-1]
+
+        while len(self.decoded_text) != self.root_node.frequency:
+            current_node = self.root_node
+            while not current_node.is_leaf:
+                if encoded_file_text[0] == '0':
+                    current_node = current_node.left
+                    encoded_file_text = encoded_file_text[1:]
+                    continue
+                if encoded_file_text[0] == '1':
+                    current_node = current_node.right
+                    encoded_file_text = encoded_file_text[1:]
+                    continue
+            self.decoded_text = self.decoded_text + current_node.value
 
     def get_compressed_file(self, key):
         """Returns the compressed file which contains compressed_text and
          encoded_elements"""
         self.compress(key)
-        return [self.encoded_elements, self.compressed_text]
+        return [self.elements_dict, self.encoded_text]
 
     def __repr__(self):
         return f'root_node(frequency: {self.root_node.frequency})'
