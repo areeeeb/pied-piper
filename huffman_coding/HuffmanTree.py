@@ -11,7 +11,7 @@ class HuffmanTree:
     nodes_list = []
     base_nodes = []
     encoded_elements = {}
-    encoded_data = ''
+    encoded_data = bitarray()
     decoded_data = ''
     root_node = None
     garbage_bits = 0
@@ -113,12 +113,18 @@ class HuffmanTree:
         """Compresses the data in binary string"""
         self.encode_elements()
         for element in self.data:
-            # self.compressed_text += ''.join(self.encoded_elements[char])
-            self.encoded_data += self.encoded_elements[element]
+            # self.encoded_data += self.encoded_elements[element]
+            for bit in self.encoded_elements[element]:
+                if bit == '0':
+                    self.encoded_data.append(False)
+                    continue
+                if bit == '1':
+                    self.encoded_data.append(True)
+
         binary_key = bin(key)[2:]
         starting_bits = '0' * (8 - len(binary_key))
         binary_key = starting_bits + binary_key
-        self.encoded_data = binary_key + self.encoded_data
+        self.encoded_data = bitarray(binary_key) + self.encoded_data
 
         self.garbage_bits = 8 - (len(self.encoded_data) % 8)
         # TODO: delete line below it
