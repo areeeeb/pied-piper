@@ -9,11 +9,11 @@ huffman_tree = HuffmanTree(data=file_data)
 huffman_tree.create_tree()
 
 compressed_file = huffman_tree.get_compressed_file(key=2)
-binary_presentation = compressed_file[1]
+bit_array = compressed_file[1]
 meta_data = compressed_file[0]
-print(binary_presentation)
-
-bit_array = bitarray.bitarray(binary_presentation)
+# print(binary_presentation)
+#
+# bit_array = bitarray.bitarray(binary_presentation)
 
 print(bit_array)
 print(huffman_tree.garbage_bits)

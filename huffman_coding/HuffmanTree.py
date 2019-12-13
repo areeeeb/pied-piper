@@ -71,6 +71,8 @@ class HuffmanTree:
 
     def create_tree(self):
         self.create_base_nodes()
+        #  TODO: Delete the line below after debugging
+        print(f'{len(self.nodes_list)} total nodes')
         i = 0
         """Creates huffman tree based on 'elements_dict'"""
         while len(self.nodes_list) > 1:
@@ -127,7 +129,6 @@ class HuffmanTree:
         self.encoded_data = bitarray(binary_key) + self.encoded_data
 
         self.garbage_bits = 8 - (len(self.encoded_data) % 8)
-        # TODO: delete line below it
         self.elements_dict['g_bits'] = self.garbage_bits
 
     def read_and_get_from_file(self, file_path):

@@ -5,11 +5,14 @@ from bitarray import bitarray
 
 from huffman_coding.HuffmanTree import HuffmanTree
 
-img = Image.open('images/parrot.jpg')
+img = Image.open('images/red.jpg')
 data = img.getdata()
+
+print(data.size)
 
 huffman_tree = HuffmanTree(data=list(data))
 huffman_tree.create_tree()
+root_node = huffman_tree.root_node
 compressed_file_data = huffman_tree.get_compressed_file(key=2)
 
 meta_data = compressed_file_data[0]
