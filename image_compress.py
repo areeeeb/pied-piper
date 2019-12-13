@@ -5,7 +5,7 @@ from bitarray import bitarray
 
 from huffman_coding.HuffmanTree import HuffmanTree
 
-img = Image.open('images/red.jpg')
+img = Image.open('images/tiger.bmp')
 data = img.getdata()
 
 print(data.size)
@@ -17,6 +17,8 @@ compressed_file_data = huffman_tree.get_compressed_file(key=2)
 
 meta_data = compressed_file_data[0]
 bit_array = compressed_file_data[1]
+
+# print(meta_data)
 
 with open('images/metadata.dat', 'wb') as fp:
     pickle.dump(meta_data, fp)
@@ -46,3 +48,5 @@ with open('images/compressed.bin', 'wb') as fp:
 #     pickle.dump(pixels_dict, fp)
 
 # img_copy.save('images/copy.png')
+
+# image_testing
