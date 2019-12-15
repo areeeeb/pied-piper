@@ -16,7 +16,7 @@ class HuffmanTree:
     root_node = None
     garbage_bits = 0
 
-    def __init__(self, data='', elements_dict=None):
+    def __init__(self, data=None, elements_dict=None):
         """
         DO NOT ENTER BOTH ARGUMENTS, ONLY ONE OF THEM IS NEEDED FOR IT TO WORK
         elements_dict is the dictionary of values and their frequencies.
@@ -25,11 +25,13 @@ class HuffmanTree:
         """
         self.data = data
         if data:
+            # for compressing
             # if user entered text then create elements_dict
             self.create_elements_dict()
         else:
+            # for decompressing
             self.elements_dict = elements_dict
-            self.garbage_bits = self.elements_dict.pop('g_bits')
+
 
     def create_elements_dict(self):
         """Creates elements_dict based on the text"""
