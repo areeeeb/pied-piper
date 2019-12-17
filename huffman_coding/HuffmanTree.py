@@ -31,7 +31,7 @@ class HuffmanTree:
         else:
             # for decompressing
             self.elements_dict = elements_dict
-
+            self.garbage_bits = elements_dict.pop('g_bits')
 
     def create_elements_dict(self):
         """Creates elements_dict based on the text"""

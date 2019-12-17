@@ -5,7 +5,7 @@ from bitarray import bitarray
 
 from huffman_coding.HuffmanTree import HuffmanTree
 
-img = Image.open('images/sample.bmp')
+img = Image.open('images/lenna.bmp')
 data = img.getdata()
 
 print(data.size)
