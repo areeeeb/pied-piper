@@ -1,6 +1,7 @@
 import collections
 
 from bitarray import bitarray
+from PIL import Image
 
 from .node import Node
 
@@ -15,23 +16,59 @@ class HuffmanTree:
     decoded_data = ''
     root_node = None
     garbage_bits = 0
+    image_path = None
+    is_image = False
+    image_size = None
+    is_decompression = False
 
-    def __init__(self, data=None, elements_dict=None):
+    def __init__(self,
+                 data=None,
+                 elements_dict=None,
+                 file_path=None,
+                 is_image=False,
+                 is_decompression=False):
         """
-        DO NOT ENTER BOTH ARGUMENTS, ONLY ONE OF THEM IS NEEDED FOR IT TO WORK
+        DO NOT ENTER ALL ARGUMENTS, ONLY FEW OF THEM IS NEEDED FOR IT TO WORK
         elements_dict is the dictionary of values and their frequencies.
-        :type data: str (in case of text), list (of image.data incase of image)
+        FOR COMPRESSION:
+        In case of image, provide 'image_path'.
+        In case of text, provide data (string).
+        FOR DECOMPRESSION:
+        provide 'elements_dict' for decompression. TODO: re-document it
+        :type data: str (in case of text)
         :type elements_dict: dict
+        :type file_path: str
         """
         self.data = data
-        if data:
-            # for compressing
-            # if user entered text then create elements_dict
-            self.create_elements_dict()
+        self.is_image = is_image
+        self.is_decompression = is_decompression
+        if is_image:
+            if self.is_decompression:
+                self.garbage_bits = elements_dict.pop('g_bits')
+                self.image_size = elements_dict.pop('image_size')
+                self.elements_dict = elements_dict
+            else:
+                img = Image.open(file_path)
+                self.image_mode = img.mode
+                self.image_size = img.size
+                data = img.getdata()
+                data_list = []
+                for tup in list(data):
+                    for val in tup:
+                        data_list.append(val)
+                self.data = data_list
+                self.create_elements_dict()
         else:
-            # for decompressing
-            self.elements_dict = elements_dict
-            self.garbage_bits = elements_dict.pop('g_bits')
+            # in case of text compression, we provide data to constructor
+            if self.is_decompression:
+                # for decompression
+                self.elements_dict = elements_dict
+                self.garbage_bits = elements_dict.pop('g_bits')
+            else:
+                # for compression
+                # if user entered text then create elements_dict
+                self.create_elements_dict()
+
 
     def create_elements_dict(self):
         """Creates elements_dict based on the text"""
@@ -133,15 +170,17 @@ class HuffmanTree:
         self.garbage_bits = 8 - (len(self.encoded_data) % 8)
         self.elements_dict['g_bits'] = self.garbage_bits
 
-    def read_and_get_from_file(self, file_path):
+    @staticmethod
+    def read_and_get_from_file(file_path):
         """Reads data from file and returns the dict with encoded_data $ key"""
         bit_array = bitarray()
         with open(file_path, 'rb') as fp:
+            # noinspection PyArgumentList
             bit_array.fromfile(fp)
         key = bit_array[:8]
         binary_presentation = bit_array[8:]
         binary_presentation_length = len(binary_presentation)
-        byte_presentation = binary_presentation.tobytes()
+        binary_presentation.tobytes()
         byte_presentation_int = int.from_bytes(binary_presentation,
                                                byteorder='big',
                                                signed=False)
@@ -152,31 +191,45 @@ class HuffmanTree:
         encoded_data = significant_bits + encoded_data
         return {'key': key, 'encoded_data': encoded_data}
 
-    def decompress(self, encoded_file_text):
+    def decompress(self, encoded_file_data):
         """Decompresses the file based on elements_dict"""
+        pixel = []
+        pixels_list = []
         self.create_tree()
         # current_node = self.root_node
 
         for i in range(self.garbage_bits):
-            encoded_file_text = encoded_file_text[:-1]
+            encoded_file_data = encoded_file_data[:-1]
 
-        while len(self.decoded_data) != self.root_node.frequency:
+        # while sum(map(len, self.decoded_data)) != self.root_node.frequency:
+        while len(encoded_file_data) >= 1:
+            # TODO: DEBUG LINE BELOW
+            print(sum(map(len, pixels_list)))
             current_node = self.root_node
             while not current_node.is_leaf:
-                if encoded_file_text[0] == '0':
+                if encoded_file_data[0] == '0':
                     current_node = current_node.left
-                    encoded_file_text = encoded_file_text[1:]
+                    encoded_file_data = encoded_file_data[1:]
                     continue
-                if encoded_file_text[0] == '1':
+                if encoded_file_data[0] == '1':
                     current_node = current_node.right
-                    encoded_file_text = encoded_file_text[1:]
+                    encoded_file_data = encoded_file_data[1:]
                     continue
-            self.decoded_data = self.decoded_data + current_node.value
+            if self.is_image:
+                pixel.append(current_node.value)
+                if len(pixel) == 3:
+                    pixels_list.append(tuple(pixel))
+                    pixel = []
+            else:
+                self.decoded_data = self.decoded_data + current_node.value
+        self.decoded_data = pixels_list
 
     def get_compressed_file(self, key):
         """Returns the compressed file which contains compressed_text and
          encoded_elements"""
         self.compress(key)
+        if self.is_image:
+            self.elements_dict['image_size'] = self.image_size
         return [self.elements_dict, self.encoded_data]
 
     def __repr__(self):

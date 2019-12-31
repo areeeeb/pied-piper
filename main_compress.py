@@ -1,16 +1,16 @@
 import pickle
-import bitarray
 from huffman_coding.HuffmanTree import HuffmanTree
 
 
-file_data = 'go go gophers'
+file_data = 'mississippi river'
 
+# In case of text compression, we give data to the constructor
 huffman_tree = HuffmanTree(data=file_data)
 huffman_tree.create_tree()
 
-compressed_file = huffman_tree.get_compressed_file(key=2)
-bit_array = compressed_file[1]
-meta_data = compressed_file[0]
+compressed_file_data = huffman_tree.get_compressed_file(key=2)
+meta_data = compressed_file_data[0]
+bit_array = compressed_file_data[1]
 # print(binary_presentation)
 #
 # bit_array = bitarray.bitarray(binary_presentation)
